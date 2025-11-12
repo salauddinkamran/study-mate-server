@@ -11,6 +11,7 @@ app.get("/", (req, res) => {
   res.send("Study-Mate-server running successfully!")
 })
 
+
 app.listen(port, () => {
   console.log(`Study-Mate-server running on port ${port}`)
 })
