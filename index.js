@@ -39,15 +39,15 @@ async function run() {
       res.send(result)
     })
 
-    // app.get('/partner/:id', async (req, res) => {
-    //   const {id} = req.params;
-    //   console.log(id)
-    //   const result = await partnerCollection.findOne({_id: new ObjectId(id)})
-    //   res.send({
-    //     success: true,
-    //     result
-    //   })
-    // })
+    app.get('/partner/:id', async (req, res) => {
+      const {id} = req.params;
+      console.log(id)
+      const result = await partnerCollection.findOne({_id: new ObjectId(id)})
+      res.send({
+        success: true,
+        result
+      })
+    })
 
     // post method
     app.post("/partner", async(req, res) => {
@@ -58,6 +58,14 @@ async function run() {
         success: true,
         result
       })
+    })
+
+    // delete method
+    app.delete('/partner/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await partnerCollection.deleteOne(query)
+      res.send(result)
     })
 
     await client.db("admin").command({ ping: 1 });
