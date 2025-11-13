@@ -60,6 +60,30 @@ async function run() {
       })
     })
 
+    // petch
+    // app.patch("/partner/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const updatePartner = req.body;
+    //   const query = {_id: new ObjectId(id)}
+    //   const update = {
+    //     $set: updatePartner
+    //   }
+    //   const result = await partnerCollection.updateOne(query, update)
+    //   res.send(result)
+    // })
+
+    app.patch("/partner/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatePartner = req.body;
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: updatePartner
+      };
+      const result = await partnerCollection.updateOne(query, update);
+      res.send(result);
+    });
+    
+
     // delete method
     app.delete('/partner/:id', async (req, res) => {
       const id = req.params.id;
