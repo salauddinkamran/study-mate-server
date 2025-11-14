@@ -100,7 +100,11 @@ async function run() {
       res.send(result);
     });
 
-
+    app.post("/my-connection", async (req, res) => {
+      const newConnection = req.body;
+      const result = await myConnectionsCollection.insertOne(newConnection);
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
