@@ -28,6 +28,20 @@ async function run() {
     const db = client.db("studymate-db");
     const partnerCollection = db.collection("partner");
     const myConnectionsCollection = db.collection("myConnections");
+    const userCollection = db.collection("users");
+
+    app.post("/users", async (req, res) => {
+      const newUser = req.body;
+      const email = req.body.email;
+      const query = { email: email };
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        res.send({message: "user already exits. do not need to insert again"});
+      } else {
+        const result = await userCollection.insertOne(newUser);
+        res.send(result);
+      }
+    });
 
     app.get("/partner", async (req, res) => {
       console.log(req.query);
@@ -105,6 +119,14 @@ async function run() {
       const result = await myConnectionsCollection.insertOne(newConnection);
       res.send(result);
     });
+
+    app.get('/my-connection/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { partnerId: id }
+      const cursor = myConnectionsCollection.find(query)
+      const result = await cursor.toArray();
+      res.send(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log(
