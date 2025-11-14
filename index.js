@@ -1,16 +1,20 @@
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 3000;
+console.log(process.env)
 
 app.use(cors());
 app.use(express.json());
 
 // user-name:password/// study-mate:2Rm29h1Xx7k97Wq2
 
+// const uri =
+//   "mongodb+srv://study-mate:2Rm29h1Xx7k97Wq2@cluster0.fvvkm3z.mongodb.net/?appName=Cluster0";
 const uri =
-  "mongodb+srv://study-mate:2Rm29h1Xx7k97Wq2@cluster0.fvvkm3z.mongodb.net/?appName=Cluster0";
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fvvkm3z.mongodb.net/?appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -36,7 +40,9 @@ async function run() {
       const query = { email: email };
       const existingUser = await userCollection.findOne(query);
       if (existingUser) {
-        res.send({message: "user already exits. do not need to insert again"});
+        res.send({
+          message: "user already exits. do not need to insert again",
+        });
       } else {
         const result = await userCollection.insertOne(newUser);
         res.send(result);
@@ -120,13 +126,20 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/my-connection/:id', async (req, res) => {
+    app.get("/my-connection/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { partnerId: id }
-      const cursor = myConnectionsCollection.find(query)
+      const query = { partnerId: id };
+      const cursor = myConnectionsCollection.find(query);
       const result = await cursor.toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
+
+    app.delete("/my-connection/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await myConnectionsCollection.deleteOne(query);
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
