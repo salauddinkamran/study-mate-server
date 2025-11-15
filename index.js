@@ -1,13 +1,18 @@
 const express = require("express");
 const cors = require("cors");
+const admin = require("firebase-admin");
+const serviceAccount = require("./serviceKey.json");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 3000;
-console.log(process.env);
 
 app.use(cors());
 app.use(express.json());
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 // user-name:password/// study-mate:2Rm29h1Xx7k97Wq2
 
@@ -23,6 +28,15 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
+const middleware = (req, res, next) => {
+  console.log(req.headers.authorization)
+  if (req.headers.authorization === "Hello") {
+    next();
+  } else {
+    res.send("Error")
+  }
+};
 
 async function run() {
   try {
@@ -49,7 +63,7 @@ async function run() {
     });
 
     app.get("/partner", async (req, res) => {
-      console.log(req.query);
+      // console.log(req.query);
       const email = req.query.email;
       const query = {};
       if (email) {
@@ -66,9 +80,9 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/partner/:id", async (req, res) => {
+    app.get("/partner/:id", middleware, async (req, res) => {
       const { id } = req.params;
-      console.log(id);
+      // console.log(id);
       const result = await partnerCollection.findOne({ _id: new ObjectId(id) });
       res.send({ result });
     });
@@ -106,14 +120,24 @@ async function run() {
       const result = await myConnectionsCollection.updateOne(query, update);
       res.send(result);
     });
+    // app.patch("/partner/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const updatePartner = req.body;
+    //   const query = { _id: new ObjectId(id) };
+    //   const update = {
+    //     $set: updatePartner,
+    //   };
+    //   const result = await partnerCollection.updateOne(query, update);
+    //   res.send(result);
+    // });
 
     // delete method
-    app.delete("/partner/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await partnerCollection.deleteOne(query);
-      res.send(result);
-    });
+    // app.delete("/partner/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const result = await partnerCollection.deleteOne(query);
+    //   res.send(result);
+    // });
 
     // myConnections related apis
     app.get("/my-connection", async (req, res) => {
@@ -133,7 +157,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/my-connection/:id", async(req, res) => {
+    app.get("/my-connection/:id", async (req, res) => {
       // const id = req.params.id;
       // const query = { partnerId: id };
       // const cursor = myConnectionsCollection.find(query);
