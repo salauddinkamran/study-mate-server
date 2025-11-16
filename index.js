@@ -29,12 +29,21 @@ const client = new MongoClient(uri, {
   },
 });
 
-const middleware = (req, res, next) => {
-  console.log(req.headers.authorization)
-  if (req.headers.authorization === "Hello") {
+const verifyToken = async (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return res.status(401).send({
+      message: "Unauthorized access. Token not found!",
+    });
+  }
+  const token = authorization.split(" ")[1];
+  try {
+    await admin.auth().verifyIdToken(token);
     next();
-  } else {
-    res.send("Error")
+  } catch (error) {
+    res.status(401).send({
+      message: "Unauthorized access.",
+    });
   }
 };
 
@@ -80,7 +89,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/partner/:id", middleware, async (req, res) => {
+    app.get("/partner/:id", verifyToken, async (req, res) => {
       const { id } = req.params;
       // console.log(id);
       const result = await partnerCollection.findOne({ _id: new ObjectId(id) });
