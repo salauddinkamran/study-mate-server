@@ -100,7 +100,7 @@ async function run() {
     app.post("/partner", async (req, res) => {
       const data = req.body;
       const result = await partnerCollection.insertOne(data);
-      // console.log(data)
+      console.log(data);
       res.send({
         success: true,
         result,
@@ -158,6 +158,7 @@ async function run() {
       const cursor = myConnectionsCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+
     });
 
     app.post("/my-connection", async (req, res) => {
@@ -167,16 +168,17 @@ async function run() {
     });
 
     app.get("/my-connection/:id", async (req, res) => {
-      // const id = req.params.id;
-      // const query = { partnerId: id };
-      // const cursor = myConnectionsCollection.find(query);
-      // const result = await cursor.toArray();
-      // res.send(result);
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await myConnectionsCollection.findOne(query);
+      const query = { partnerId: id };
+      const cursor = myConnectionsCollection.find(query);
+      const result = await cursor.toArray();
       res.send(result);
+      // const id = req.params.id;
+      // const query = { _id: new ObjectId(id) };
+      // const result = await partnerCollection.findOne(query);
+      // res.send(result);
     });
+
 
     app.delete("/my-connection/:id", async (req, res) => {
       const id = req.params.id;
