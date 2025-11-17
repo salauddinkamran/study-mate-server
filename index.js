@@ -49,7 +49,7 @@ const verifyToken = async (req, res, next) => {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const db = client.db("studymate-db");
     const partnerCollection = db.collection("partner");
@@ -107,18 +107,6 @@ async function run() {
       });
     });
 
-    // update method api
-    // app.patch("/my-connection/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const updatePartner = req.body;
-    //   const query = { _id: new ObjectId(id) };
-    //   const update = {
-    //     $set: updatePartner,
-    //   };
-    //   const result = await myConnectionsCollection.updateOne(query, update);
-    //   res.send(result);
-    // });
-
     app.patch("/my-connection/:id", async (req, res) => {
       const id = req.params.id;
       const updatePartner = req.body;
@@ -129,24 +117,6 @@ async function run() {
       const result = await myConnectionsCollection.updateOne(query, update);
       res.send(result);
     });
-    // app.patch("/partner/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const updatePartner = req.body;
-    //   const query = { _id: new ObjectId(id) };
-    //   const update = {
-    //     $set: updatePartner,
-    //   };
-    //   const result = await partnerCollection.updateOne(query, update);
-    //   res.send(result);
-    // });
-
-    // delete method
-    // app.delete("/partner/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: new ObjectId(id) };
-    //   const result = await partnerCollection.deleteOne(query);
-    //   res.send(result);
-    // });
 
     // myConnections related apis
     app.get("/my-connection", async (req, res) => {
@@ -168,24 +138,11 @@ async function run() {
     });
 
     app.get("/my-connection/:id", async (req, res) => {
-      // const id = req.params.id;
-      // const query = { partnerId: id };
-      // const cursor = myConnectionsCollection.find(query);
-      // const result = await cursor.toArray();
-      // res.send(result);
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await myConnectionsCollection.findOne(query);
       res.send(result);
     });
-
-    // app.get("/my-connection/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: new ObjectId(id) };
-    //   const result = await myConnectionsCollection.findOne(query);
-    //   res.send(result);
-    // });
-
 
     app.delete("/my-connection/:id", async (req, res) => {
       const id = req.params.id;
@@ -206,7 +163,7 @@ async function run() {
       res.send(result)
     })
 
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
