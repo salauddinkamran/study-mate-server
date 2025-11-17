@@ -168,16 +168,23 @@ async function run() {
     });
 
     app.get("/my-connection/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { partnerId: id };
-      const cursor = myConnectionsCollection.find(query);
-      const result = await cursor.toArray();
-      res.send(result);
       // const id = req.params.id;
-      // const query = { _id: new ObjectId(id) };
-      // const result = await partnerCollection.findOne(query);
+      // const query = { partnerId: id };
+      // const cursor = myConnectionsCollection.find(query);
+      // const result = await cursor.toArray();
       // res.send(result);
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await myConnectionsCollection.findOne(query);
+      res.send(result);
     });
+
+    // app.get("/my-connection/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const result = await myConnectionsCollection.findOne(query);
+    //   res.send(result);
+    // });
 
 
     app.delete("/my-connection/:id", async (req, res) => {
@@ -186,6 +193,18 @@ async function run() {
       const result = await myConnectionsCollection.deleteOne(query);
       res.send(result);
     });
+
+
+    app.get("/search", async (req, res) => {
+      const search_text = req.query.search;
+      const result = await partnerCollection.find({
+        $or:[
+          {subject: {$regex: search_text, $options: "i"}},
+          {name: {$regex: search_text, $options: "i"}}
+        ]
+      }).toArray()
+      res.send(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log(
